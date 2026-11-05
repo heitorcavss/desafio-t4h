@@ -1,0 +1,27 @@
+MEDIANAS DA LINHA DE BASE
+
+Aplicação original, sem mexer em nada.
+Carga: 20 usuários virtuais, 60 s, semente 42.
+
+As 3 execuções (pastas em resultados/):
+1. 20261104-171102-00-linha-de-base
+2. 20261104-171309-00-linha-de-base
+3. 20261104-171510-00-linha-de-base
+
+                                 Exec 1    Exec 2    Exec 3    Mediana
+Requisições/s                    1,62      1,68      1,68      1,68
+Tempo de resposta, mediana (ms)  2010,3    2400,9    2097,7    2097,7
+p95 (ms)                         43497,5   41966,6   41738,9   41966,6
+p99 (ms)                         49109,3   45136,7   46352,2   46352,2
+Erros                            0%        0%        0,78%     0%
+BD, CPU média                    96,4%     96,4%     98,2%     96,4%
+BD, memória média (MiB)          399,9     401,1     394,3     399,9
+API, CPU média                   9,3%      9,5%      9,1%      9,3%
+API, memória média (MiB)         28,6      72,8      73,3      72,8
+
+O QUE DEU PRA VER NOS NÚMEROS
+
+- O BD usa muita CPU (!). Fica quase no limite dele, e a API mal usa a dela.
+- A memória do BD também chama atenção (!). Tá perto do limite.
+- A memória média da API variou bastante: na execução 1 foi bem menor que nas 2 e 3.
+- Na execução 3 teve um pouco de erro, uma requisição de top-produtos que passou dos 60 s.
