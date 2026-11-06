@@ -1,0 +1,25 @@
+=== Custo da conexão ao banco, medido com pgbench (consulta: SELECT 1;)
+Rodado dentro do container "banco". Mesma consulta e mesmo número de repetições nas duas medições; só muda a conexão.
+Contexto no código: api/src/db.js abre uma conexão nova a cada chamada de consultar().
+
+--- A) Conexão reaproveitada (aberta uma vez, usada nas 200 consultas)
+Comando:
+echo 'SELECT 1;' | docker compose exec -T banco pgbench -U loja -d loja -n -t 200 -f /dev/stdin
+
+number of transactions per client: 200
+number of transactions actually processed: 200/200
+number of failed transactions: 0 (0.000%)
+latency average = 0.613 ms
+initial connection time = 5.889 ms
+tps = 1631.733962 (without initial connection time)
+
+--- B) Conexão nova a cada consulta (-C), como o db.js faz hoje
+Comando:
+echo 'SELECT 1;' | docker compose exec -T banco pgbench -U loja -d loja -n -C -t 200 -f /dev/stdin
+
+number of transactions per client: 200
+number of transactions actually processed: 200/200
+number of failed transactions: 0 (0.000%)
+latency average = 8.840 ms
+average connection time = 6.334 ms
+tps = 113.118845 (including reconnection times)
