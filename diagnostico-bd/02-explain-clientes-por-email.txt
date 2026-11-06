@@ -1,0 +1,19 @@
+=== GET /clientes?email= (rotas.js:46-49)
+Timing is on.
+                                                  QUERY PLAN                                                   
+---------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2678.41..2679.66 rows=500 width=60) (actual time=68.656..68.658 rows=1 loops=1)
+   Sort Key: id
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1159
+   ->  Seq Scan on clientes  (cost=0.00..2656.00 rows=500 width=60) (actual time=0.025..68.543 rows=1 loops=1)
+         Filter: (lower(email) = 'cliente3@exemplo.com'::text)
+         Rows Removed by Filter: 99999
+         Buffers: shared hit=1156
+ Planning:
+   Buffers: shared hit=81
+ Planning Time: 1.212 ms
+ Execution Time: 68.733 ms
+(12 rows)
+
+Time: 72.610 ms

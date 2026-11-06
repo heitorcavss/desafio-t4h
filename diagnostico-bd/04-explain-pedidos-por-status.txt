@@ -1,0 +1,74 @@
+=== GET /pedidos?status=&pagina= (rotas.js:112-116): 2 consultas
+Timing is on.
+--- contagem
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=24750.24..24750.25 rows=1 width=8) (actual time=198.328..203.809 rows=1 loops=1)
+   Buffers: shared hit=5382 read=15452
+   ->  Gather  (cost=24750.02..24750.23 rows=2 width=8) (actual time=198.188..203.799 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=5382 read=15452
+         ->  Partial Aggregate  (cost=23750.02..23750.03 rows=1 width=8) (actual time=195.552..195.554 rows=1 loops=3)
+               Buffers: shared hit=5382 read=15452
+               ->  Parallel Seq Scan on pedidos  (cost=0.00..23438.17 rows=124743 width=0) (actual time=0.045..185.725 rows=100000 loops=3)
+                     Filter: (status = 'pago'::text)
+                     Rows Removed by Filter: 66667
+                     Buffers: shared hit=5382 read=15452
+ Planning:
+   Buffers: shared hit=65 read=1
+ Planning Time: 2.755 ms
+ Execution Time: 203.987 ms
+(16 rows)
+
+Time: 207.650 ms
+--- pagina 1
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=27757.56..27759.89 rows=20 width=300) (actual time=311.776..389.371 rows=20 loops=1)
+   Buffers: shared hit=5604 read=15356
+   ->  Gather Merge  (cost=27757.56..56866.29 rows=249486 width=300) (actual time=311.774..389.362 rows=20 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=5604 read=15356
+         ->  Sort  (cost=26757.53..27069.39 rows=124743 width=300) (actual time=304.644..304.650 rows=17 loops=3)
+               Sort Key: criado_em DESC, id DESC
+               Sort Method: top-N heapsort  Memory: 42kB
+               Buffers: shared hit=5604 read=15356
+               Worker 0:  Sort Method: top-N heapsort  Memory: 42kB
+               Worker 1:  Sort Method: top-N heapsort  Memory: 43kB
+               ->  Parallel Seq Scan on pedidos  (cost=0.00..23438.17 rows=124743 width=300) (actual time=0.083..215.609 rows=100000 loops=3)
+                     Filter: (status = 'pago'::text)
+                     Rows Removed by Filter: 66667
+                     Buffers: shared hit=5478 read=15356
+ Planning:
+   Buffers: shared hit=32
+ Planning Time: 0.207 ms
+ Execution Time: 389.455 ms
+(20 rows)
+
+Time: 390.776 ms
+--- pagina 15000 (ultima do status pago)
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=81588.04..81588.16 rows=1 width=300) (actual time=1132.875..1141.590 rows=20 loops=1)
+   Buffers: shared hit=5700 read=15260, temp read=11476 written=11507
+   ->  Gather Merge  (cost=52479.31..81588.04 rows=249486 width=300) (actual time=796.874..1125.883 rows=300000 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=5700 read=15260, temp read=11476 written=11507
+         ->  Sort  (cost=51479.29..51791.15 rows=124743 width=300) (actual time=766.947..809.535 rows=100000 loops=3)
+               Sort Key: criado_em DESC, id DESC
+               Sort Method: external merge  Disk: 29920kB
+               Buffers: shared hit=5700 read=15260, temp read=11476 written=11507
+               Worker 0:  Sort Method: external merge  Disk: 29928kB
+               Worker 1:  Sort Method: external merge  Disk: 31960kB
+               ->  Parallel Seq Scan on pedidos  (cost=0.00..23438.17 rows=124743 width=300) (actual time=0.178..131.937 rows=100000 loops=3)
+                     Filter: (status = 'pago'::text)
+                     Rows Removed by Filter: 66667
+                     Buffers: shared hit=5574 read=15260
+ Planning Time: 0.182 ms
+ Execution Time: 1147.012 ms
+(18 rows)
+
+Time: 1148.045 ms (00:01.148)

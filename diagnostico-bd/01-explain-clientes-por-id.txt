@@ -1,0 +1,14 @@
+=== GET /clientes/:id (rotas.js:57)
+Timing is on.
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Index Scan using clientes_pkey on clientes  (cost=0.29..8.31 rows=1 width=60) (actual time=1.399..1.448 rows=1 loops=1)
+   Index Cond: (id = 42)
+   Buffers: shared hit=2 read=1
+ Planning:
+   Buffers: shared hit=75 dirtied=1
+ Planning Time: 2.475 ms
+ Execution Time: 2.401 ms
+(7 rows)
+
+Time: 11.918 ms

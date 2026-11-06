@@ -1,0 +1,81 @@
+=== GET /clientes/:id/pedidos (rotas.js:66-81): 1 consulta de cliente, 1 de pedidos, 1 por pedido (itens) e 1 por item (produto)
+Timing is on.
+--- cliente
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Index Scan using clientes_pkey on clientes  (cost=0.29..8.31 rows=1 width=60) (actual time=0.022..0.022 rows=1 loops=1)
+   Index Cond: (id = 42)
+   Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=73
+ Planning Time: 0.310 ms
+ Execution Time: 0.060 ms
+(7 rows)
+
+Time: 0.974 ms
+--- pedidos do cliente
+                                                           QUERY PLAN                                                           
+--------------------------------------------------------------------------------------------------------------------------------
+ Gather Merge  (cost=24438.20..24438.67 rows=4 width=300) (actual time=960.379..964.754 rows=5 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=5379 read=15581
+   ->  Sort  (cost=23438.18..23438.18 rows=2 width=300) (actual time=952.347..952.349 rows=2 loops=3)
+         Sort Key: criado_em DESC, id DESC
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=5379 read=15581
+         Worker 0:  Sort Method: quicksort  Memory: 25kB
+         Worker 1:  Sort Method: quicksort  Memory: 26kB
+         ->  Parallel Seq Scan on pedidos  (cost=0.00..23438.17 rows=2 width=300) (actual time=286.117..952.216 rows=2 loops=3)
+               Filter: (cliente_id = 42)
+               Rows Removed by Filter: 166665
+               Buffers: shared hit=5253 read=15581
+ Planning:
+   Buffers: shared hit=46
+ Planning Time: 2.113 ms
+ Execution Time: 964.885 ms
+(18 rows)
+
+Time: 967.731 ms
+--- itens de UM pedido (a rota repete isto para cada pedido)
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=18367.94..18367.95 rows=4 width=20) (actual time=955.662..960.228 rows=2 loops=1)
+   Sort Key: id
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=9251 read=304
+   ->  Gather  (cost=1000.00..18367.90 rows=4 width=20) (actual time=955.467..960.173 rows=2 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=9251 read=304
+         ->  Parallel Seq Scan on itens_pedido  (cost=0.00..17367.50 rows=2 width=20) (actual time=858.236..950.109 rows=1 loops=3)
+               Filter: (pedido_id = 136871)
+               Rows Removed by Filter: 499999
+               Buffers: shared hit=9251 read=304
+ Planning:
+   Buffers: shared hit=35
+ Planning Time: 0.354 ms
+ Execution Time: 960.257 ms
+(16 rows)
+
+Time: 961.232 ms
+--- produto de UM item (a rota repete isto para cada item)
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Index Scan using produtos_pkey on produtos  (cost=0.29..8.30 rows=1 width=44) (actual time=0.198..0.200 rows=1 loops=1)
+   Index Cond: (id = 91)
+   Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=28
+ Planning Time: 0.402 ms
+ Execution Time: 0.218 ms
+(7 rows)
+
+Time: 1.552 ms
+--- quantos pedidos e itens tem o cliente 42 (tamanho do N+1)
+ pedidos | itens 
+---------+-------
+       5 |    10
+(1 row)
+
+Time: 408.273 ms

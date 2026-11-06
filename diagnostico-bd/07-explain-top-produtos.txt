@@ -1,0 +1,51 @@
+=== GET /relatorios/top-produtos (rotas.js:193-205), limite 10
+Timing is on.
+                                                                                 QUERY PLAN                                                                                 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=57093.91..57093.94 rows=10 width=56) (actual time=3265.405..3269.563 rows=10 loops=1)
+   Buffers: shared hit=15178 read=15793
+   ->  Sort  (cost=57093.91..57143.91 rows=20000 width=56) (actual time=3265.402..3269.557 rows=10 loops=1)
+         Sort Key: (sum((i.quantidade * i.preco_unitario_centavos))) DESC, pr.id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=15178 read=15793
+         ->  Finalize HashAggregate  (cost=56461.72..56661.72 rows=20000 width=56) (actual time=3253.141..3264.071 rows=19206 loops=1)
+               Group Key: pr.id
+               Batches: 1  Memory Usage: 3089kB
+               Buffers: shared hit=15172 read=15793
+               ->  Gather  (cost=51961.72..56161.72 rows=40000 width=56) (actual time=3137.346..3157.428 rows=57618 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=15172 read=15793
+                     ->  Partial HashAggregate  (cost=50961.72..51161.72 rows=20000 width=56) (actual time=3131.751..3139.307 rows=19206 loops=3)
+                           Group Key: pr.id
+                           Batches: 1  Memory Usage: 3089kB
+                           Buffers: shared hit=15172 read=15793
+                           Worker 0:  Batches: 1  Memory Usage: 3089kB
+                           Worker 1:  Batches: 1  Memory Usage: 3089kB
+                           ->  Hash Join  (cost=26420.00..45341.31 rows=562041 width=48) (actual time=543.630..2388.345 rows=450000 loops=3)
+                                 Hash Cond: (i.produto_id = pr.id)
+                                 Buffers: shared hit=15172 read=15793
+                                 ->  Parallel Hash Join  (cost=25780.00..43225.64 rows=562041 width=12) (actual time=516.665..1579.533 rows=450000 loops=3)
+                                       Hash Cond: (i.pedido_id = p.id)
+                                       Buffers: shared hit=14596 read=15793
+                                       ->  Parallel Seq Scan on itens_pedido i  (cost=0.00..15805.00 rows=625000 width=16) (actual time=0.031..356.488 rows=500000 loops=3)
+                                             Buffers: shared hit=8869 read=686
+                                       ->  Parallel Hash  (cost=23438.17..23438.17 rows=187347 width=4) (actual time=513.599..513.603 rows=150000 loops=3)
+                                             Buckets: 524288  Batches: 1  Memory Usage: 21728kB
+                                             Buffers: shared hit=5727 read=15107
+                                             ->  Parallel Seq Scan on pedidos p  (cost=0.00..23438.17 rows=187347 width=4) (actual time=0.041..264.101 rows=150000 loops=3)
+                                                   Filter: (status <> 'cancelado'::text)
+                                                   Rows Removed by Filter: 16667
+                                                   Buffers: shared hit=5727 read=15107
+                                 ->  Hash  (cost=390.00..390.00 rows=20000 width=40) (actual time=26.777..26.779 rows=20000 loops=3)
+                                       Buckets: 32768  Batches: 1  Memory Usage: 1696kB
+                                       Buffers: shared hit=570
+                                       ->  Seq Scan on produtos pr  (cost=0.00..390.00 rows=20000 width=40) (actual time=0.033..4.682 rows=20000 loops=3)
+                                             Buffers: shared hit=570
+ Planning:
+   Buffers: shared hit=190 read=3
+ Planning Time: 4.024 ms
+ Execution Time: 3271.772 ms
+(44 rows)
+
+Time: 3282.572 ms (00:03.283)
