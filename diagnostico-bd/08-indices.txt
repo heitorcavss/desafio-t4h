@@ -1,0 +1,9 @@
+                     List of relations
+ Schema |       Name        | Type  | Owner |    Table     
+--------+-------------------+-------+-------+--------------
+ public | clientes_pkey     | index | loja  | clientes
+ public | itens_pedido_pkey | index | loja  | itens_pedido
+ public | pedidos_pkey      | index | loja  | pedidos
+ public | produtos_pkey     | index | loja  | produtos
+(4 rows)
+
