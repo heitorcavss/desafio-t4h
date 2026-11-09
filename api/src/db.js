@@ -5,7 +5,7 @@ const config = {
   port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER || 'loja',
   database: process.env.DB_NAME || 'loja',
-  max: 10,
+  max: 20,
 };
 
 // Pool: as conexões ficam abertas e são reaproveitadas em vez de abrir uma por consulta.
