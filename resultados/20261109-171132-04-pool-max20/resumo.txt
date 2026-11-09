@@ -1,0 +1,17 @@
+Medição: 04-pool-max20
+Carga: 20 usuários virtuais por 60s
+
+Requisições:        317
+Requisições/s:      4.24
+Tempo de resposta:  mediana 298.1 ms | p95 23879.1 ms | p99 36917.6 ms
+Erros:              0.32%
+
+Por rota:
+rota                  req       mediana       p95           p99           erros   
+cliente               79        101.5 ms      394.1 ms      715.9 ms      0.0%    
+cliente-por-email     50        102.7 ms      742.0 ms      940.3 ms      0.0%    
+pedidos-do-cliente    65        300.1 ms      1238.3 ms     2493.4 ms     0.0%    
+pedidos-por-status    43        21444.3 ms    25128.1 ms    34960.1 ms    0.0%    
+busca-produtos        58        400.9 ms      925.2 ms      1147.4 ms     0.0%    
+vendas-por-dia        19        13807.6 ms    25808.1 ms    30768.6 ms    0.0%    
+top-produtos          3         51789.4 ms    64125.5 ms    65222.0 ms    33.3%   
