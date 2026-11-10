@@ -1,0 +1,24 @@
+=== GET /relatorios/vendas-por-dia, periodo 2024-01-01 a 2024-01-07, estado atual (indices 01 e 05 aplicados)
+Timing is on.
+                                                                        QUERY PLAN                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=1000.43..33702.48 rows=6756 width=297) (actual time=2.043..419.067 rows=12945 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=27199 read=10943
+   ->  Nested Loop  (cost=0.43..32026.88 rows=2815 width=297) (actual time=0.798..409.389 rows=4315 loops=3)
+         Buffers: shared hit=27199 read=10943
+         ->  Parallel Seq Scan on pedidos p  (cost=0.00..25521.50 rows=938 width=289) (actual time=0.730..398.099 rows=1438 loops=3)
+               Filter: ((status <> 'cancelado'::text) AND ((criado_em)::date >= '2024-01-01'::date) AND ((criado_em)::date <= '2024-01-07'::date))
+               Rows Removed by Filter: 165229
+               Buffers: shared hit=9891 read=10943
+         ->  Index Scan using itens_pedido_pedido_id_idx on itens_pedido i  (cost=0.43..6.90 rows=4 width=12) (actual time=0.006..0.006 rows=3 loops=4313)
+               Index Cond: (pedido_id = p.id)
+               Buffers: shared hit=17308
+ Planning:
+   Buffers: shared hit=294 read=3
+ Planning Time: 5.448 ms
+ Execution Time: 420.157 ms
+(17 rows)
+
+Time: 435.998 ms

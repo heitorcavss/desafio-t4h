@@ -1,0 +1,34 @@
+=== vendas-por-dia AGRUPADO NO SQL (teste de custo no banco), periodo 2024-01-01 a 2024-01-07, estado atual
+Timing is on.
+                                                                                          QUERY PLAN                                                                                          
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=25731.77..26636.84 rows=2252 width=28) (actual time=388.873..392.375 rows=7 loops=1)
+   Group Key: (((p.criado_em AT TIME ZONE 'UTC'::text))::date)
+   Buffers: shared hit=20264
+   ->  Gather Merge  (cost=25731.77..26518.61 rows=6756 width=16) (actual time=388.350..391.440 rows=12945 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=20264
+         ->  Sort  (cost=24731.74..24738.78 rows=2815 width=16) (actual time=382.304..382.454 rows=4315 loops=3)
+               Sort Key: (((p.criado_em AT TIME ZONE 'UTC'::text))::date), p.id
+               Sort Method: quicksort  Memory: 246kB
+               Buffers: shared hit=20264
+               Worker 0:  Sort Method: quicksort  Memory: 359kB
+               Worker 1:  Sort Method: quicksort  Memory: 383kB
+               ->  Nested Loop  (cost=0.85..24570.46 rows=2815 width=16) (actual time=15.564..380.384 rows=4315 loops=3)
+                     Buffers: shared hit=20234
+                     ->  Parallel Index Only Scan using pedidos_status_criado_em_id_idx on pedidos p  (cost=0.42..18051.01 rows=938 width=12) (actual time=15.495..361.950 rows=1438 loops=3)
+                           Filter: ((status <> 'cancelado'::text) AND ((criado_em)::date >= '2024-01-01'::date) AND ((criado_em)::date <= '2024-01-07'::date))
+                           Rows Removed by Filter: 165229
+                           Heap Fetches: 384
+                           Buffers: shared hit=2926
+                     ->  Index Scan using itens_pedido_pedido_id_idx on itens_pedido i  (cost=0.43..6.90 rows=4 width=12) (actual time=0.011..0.011 rows=3 loops=4313)
+                           Index Cond: (pedido_id = p.id)
+                           Buffers: shared hit=17308
+ Planning:
+   Buffers: shared hit=233 read=3
+ Planning Time: 8.481 ms
+ Execution Time: 393.758 ms
+(27 rows)
+
+Time: 420.818 ms
