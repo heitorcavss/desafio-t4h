@@ -2,7 +2,7 @@
 
 Uma linha por ideia aplicada. Todo número de antes e depois vem do `scripts/medir.sh` (pastas em `resultados/`), e cada valor é a **mediana das 3 execuções**. Parâmetros iguais em todas as medições: 20 usuários virtuais, 60 s, semente 42.
 
-**Antes usado:** a linha de base (aplicação original), nas 3 pastas abaixo. Cada mudança da tabela é comparada com ela. A mudança 02 também é comparada com a mudança 01, e as mudanças 03 e 04 com a 02, para isolar o efeito de cada uma (veja as notas).
+**Antes usado:** a linha de base (aplicação original), nas 3 pastas abaixo. Cada mudança da tabela é comparada com ela. A mudança 02 também é comparada com a mudança 01, as mudanças 03 e 04 com a 02, e a mudança 05 com a 03 (código final do pool, `max` 10), para isolar o efeito de cada uma (veja as notas).
 
 - Linha de base: [171102](resultados/20261104-171102-00-linha-de-base/resumo.txt), [171309](resultados/20261104-171309-00-linha-de-base/resumo.txt), [171510](resultados/20261104-171510-00-linha-de-base/resumo.txt) (commit medido: `8134893`)
 
@@ -14,6 +14,7 @@ Uma linha por ideia aplicada. Todo número de antes e depois vem do `scripts/med
 | 02 | Rota `/clientes/:id/pedidos` com um `JOIN` no lugar das consultas em loop (`api/src/rotas.js`, commit `8ce1978`) | Ao alterar a rota `/clientes/:id/pedidos` provavelmente diminuirá o tempo de latência da rota específica, pois diminuirá o número de consultas e, por consequência, o de conexões ao banco de dados. Dessa forma, podendo acarretar em uma diminuição no uso da CPU, visto que a rota ficará mais responsiva. | Wellhausen (2008), "Object Prefetch Filter" [link pendente]; [Phabricator, N+1](https://secure.phabricator.com/book/phabcontrib/article/n_plus_one/); [OpenReplay, N+1](https://blog.openreplay.com/n-1-query-problem/); Silberschatz cap. 23 (p. 598-599) | Aplicada e medida | 1,68 → 6,27 | 41966,6 → 16796,6 | 96,4% → 100,1% | 399,9 → 403,5 MiB | 9,3% → 15,0% | [162701](resultados/20261109-162701-02-join/resumo.txt), [162849](resultados/20261109-162849-02-join/resumo.txt), [163030](resultados/20261109-163030-02-join/resumo.txt) | Depois do JOIN, a latência da rota `/clientes/:id/pedidos` diminuiu muito (a mediana foi de 7390,8 para 598,5 ms), porque ela deixou de fazer várias consultas e passou a fazer duas (no cliente 42, pela contagem do código; as conexões eu não medi diretamente). As requisições por segundo aumentaram (de 3,93 para 6,27), porque a rota ficou mais rápida. Só que a CPU não diminuiu como eu tinha pensado: o banco chegou ao limite (100,1%), porque, com mais requisições por segundo, ele continua trabalhando no máximo. O que diminuiu foi a CPU por requisição: o banco gasta menos CPU para atender cada uma (cerca de 25 por req/s na mudança 01 contra cerca de 16 na 02). Essa é uma conta que eu fiz, dividindo a CPU média pela vazão, e não um número do `medir.sh`. O p95 geral ficou igual (16433,0 → 16796,6 ms), porque os tempos mais lentos agora vêm de outras rotas, que eu não mexi. |
 | 03 | Pool de conexões no lugar de uma conexão por consulta, com `max: 10` (`api/src/db.js`, commit `cebdf56`) | A implementação do pool pode acarretar a diminuição do tempo de latência geral da API, visto que o tempo para abrir uma conexão nova é consideravelmente maior do que o de reaproveitar uma conexão já aberta, implicando diretamente nas requisições por segundo e na diminuição do custo de CPU de uma requisição única, ou seja, mais req/s. | [node-postgres, Pooling](https://node-postgres.com/features/pooling); [Percona (Camargos, 2018)](https://www.percona.com/blog/2018/06/27/scaling-postgresql-with-pgbouncer-you-may-need-a-connection-pooler-sooner-than-you-expect/); [Freund (2020)](https://techcommunity.microsoft.com/blog/adforpostgresql/analyzing-the-limits-of-connection-scalability-in-postgres/1757266); [Brandur (2018)](https://brandur.org/postgres-connections); Măciucă et al. (2013) [link pendente]; [Sobri et al. (2022)](https://doi.org/10.24191/jeesr.v20i1.004) | Aplicada e medida | 1,68 → 6,85 | 41966,6 → 8820,5 | 96,4% → 99,8% | 399,9 → 402,8 MiB | 9,3% → 15,0% | [165605](resultados/20261109-165605-03-pool/resumo.txt), [165747](resultados/20261109-165747-03-pool/resumo.txt), [165931](resultados/20261109-165931-03-pool/resumo.txt) | O pool melhorou a vazão (de 6,27 para 6,85 req/s contra a mudança 02), o p95 (de 16796,6 para 8820,5 ms) e a CPU por requisição (de cerca de 16 para cerca de 15, conta feita dividindo a CPU média pela vazão), como eu esperava. Só que a mediana piorou (de 493,0 para 1490,5 ms), o que eu não esperava: as rotas leves ficaram cerca de 3 vezes mais lentas e as pesadas ficaram mais rápidas. Minha explicação, que eu não medi, é que o pool tem 10 conexões para 20 usuários: as consultas leves esperam na fila atrás das pesadas, e o limite de conexões alivia a disputa pela CPU do banco. Escolhi o `max` 10 sem considerar o número de usuários da carga (20), e esse resultado levou à mudança 04. |
 | 04 | Pool com `max: 20`, igual ao número de usuários da carga (`api/src/db.js`, commit `92059e8`) | Com `max: 20`, igual ao número de usuários, as consultas leves não deverão mais esperar na fila do pool, e a mediana deve voltar perto da mudança 02; em compensação, o p95 deve subir, porque mais consultas pesadas disputam a CPU do banco ao mesmo tempo. Critério de equilíbrio: o melhor tamanho de pool é o que equilibra a mediana, o p95 e a vazão, sem melhorar uma à custa da outra. | [Sobri et al. (2022)](https://doi.org/10.24191/jeesr.v20i1.004); [Percona (Camargos, 2018)](https://www.percona.com/blog/2018/06/27/scaling-postgresql-with-pgbouncer-you-may-need-a-connection-pooler-sooner-than-you-expect/); IBM, *WebSphere Connection Pooling* (2001), p. 12-13 e 40 [link pendente] | Aplicada e medida | 1,68 → 4,03 | 41966,6 → 24147,3 | 96,4% → 98,7% | 399,9 → 402,5 MiB | 9,3% → 15,5% | [171132](resultados/20261109-171132-04-pool-max20/resumo.txt), [171328](resultados/20261109-171328-04-pool-max20/resumo.txt), [171524](resultados/20261109-171524-04-pool-max20/resumo.txt) | Com 20 conexões, a mediana foi para 398,5 ms (a melhor de todas as etapas) e as rotas leves ficaram rápidas (a `cliente` em 105,1 ms), como eu esperava. O p95 subiu, mas mais do que eu previa: foi para 24147,3 ms, pior que o da mudança 02, sem pool (16796,6 ms). A vazão também caiu (4,03 req/s) e apareceram erros (0,32% em duas execuções), o que eu não esperava. Minha explicação, que eu não medi, é que, com 20 conexões, as consultas pesadas rodam juntas e disputam a única CPU do banco: cada uma demora mais, e os usuários ficam presos nelas e fazem menos requisições. A CPU por requisição piorou (de cerca de 15 para cerca de 25, dividindo a CPU média pela vazão). Pelo critério de equilíbrio, o `max` 10 se saiu melhor no conjunto, e o 20 só ganhou na mediana e nas rotas leves. |
+| 05 | Índice multicoluna `(status, criado_em, id)` em `pedidos` (`banco/04-indexes-pedidos.sql`, commit `0c5c5f8`) | O índice vai reduzir o tempo da consulta do `/pedidos`: indexar as colunas juntas, numa rota com 15% do peso da carga e com 15000 páginas por status, pode dar um bom ganho de tempo. | [Índices multicoluna (PostgreSQL 16)](https://www.postgresql.org/docs/16/indexes-multicolumn.html); [Índices e ORDER BY (PostgreSQL 16)](https://www.postgresql.org/docs/16/indexes-ordering.html); [Winand, Top-N](https://use-the-index-luke.com/sql/partial-results/top-n-queries); Silberschatz cap. 23 (p. 596-598) | Aplicada e medida | 1,68 → 9,85 | 41966,6 → 7682,8 | 96,4% → 99,3% | 399,9 → 429,7 MiB | 9,3% → 19,7% | [010746](resultados/20261110-010746-05-indice-pedidos/resumo.txt), [010928](resultados/20261110-010928-05-indice-pedidos/resumo.txt), [011113](resultados/20261110-011113-05-indice-pedidos/resumo.txt) | Depois do índice, o tempo da consulta diminuiu: na página 1, o `EXPLAIN ANALYZE` foi de 389,5 para 0,9 ms, e a contagem de 204,0 para 47,3 ms ([diagnóstico 09](diagnostico-bd/09-explain-pedidos-por-status-com-indice.txt)). Na carga, a mediana da rota `pedidos-por-status` foi de 5637,4 para 1711,9 ms, e a vazão geral subiu de 6,85 para 9,85 req/s contra a mudança 03. O banco continua perto de 100% de CPU, então o ganho é de CPU por requisição (cerca de 15 na 03 contra cerca de 10 na 05, conta que eu fiz dividindo a CPU média pela vazão). O índice não ajuda em tudo: na página 15000 (`OFFSET` 299980) o banco continuou lendo a tabela inteira (1147,0 → 1104,9 ms), mas a carga só pede páginas de 1 a 1000, e nela o índice é usado (página 1000: 64,3 ms). |
 
 Contrato: mantido nas 3 execuções de cada mudança (`contrato.txt` de cada pasta).
 
@@ -73,3 +74,43 @@ Mediana por rota (ms):
 - A explicação da fila de conexões e da disputa pela CPU do banco é uma hipótese, e não foi medida diretamente.
 - Um valor intermediário (por exemplo 15) ou menor (por exemplo 5) não foi testado.
 - **Versão final adotada: `max: 10`.** Pelo critério de equilíbrio, foi a que se saiu melhor no conjunto entre as duas testadas (vazão, p95, p99, erros e CPU por requisição), e perdeu só na mediana. O código final é o mesmo da mudança 03 (medida no commit `cebdf56`), por isso não foi medido de novo.
+
+## Notas sobre a mudança 05 (índice no `/pedidos`)
+
+Comparação direta com a mudança 03, que tem o mesmo código final do pool (mediana das 3 execuções de cada):
+
+| Métrica | 03 | 05 |
+|---|---|---|
+| Requisições por segundo | 6,85 | 9,85 |
+| Tempo de resposta, mediana (ms) | 1490,5 | 790,9 |
+| p95 geral (ms) | 8820,5 | 7682,8 |
+| p99 geral (ms) | 19819,1 | 15960,8 |
+| Erros | 0% | 0% |
+| Banco, CPU média | 99,8% | 99,3% |
+| CPU do banco por req/s (conta feita a partir das medianas) | cerca de 15 | cerca de 10 |
+
+Mediana por rota (ms):
+
+| Rota | 03 | 05 |
+|---|---|---|
+| `cliente` | 901,2 | 506,8 |
+| `cliente-por-email` | 817,7 | 486,7 |
+| `pedidos-do-cliente` | 1853,1 | 993,2 |
+| `pedidos-por-status` | 5637,4 | 1711,9 |
+| `vendas-por-dia` | 6338,9 | 4674,4 |
+| `top-produtos` | 20736,8 | 17458,6 |
+
+`EXPLAIN (ANALYZE, BUFFERS)` do `/pedidos` com status `pago`, antes ([04](diagnostico-bd/04-explain-pedidos-por-status.txt)) e depois ([09](diagnostico-bd/09-explain-pedidos-por-status-com-indice.txt)), em `Execution Time`:
+
+| Consulta | Antes (ms) | Depois (ms) | Como o banco lê (depois) |
+|---|---|---|---|
+| Contagem | 204,0 | 47,3 | Index Only Scan |
+| Página 1 | 389,5 | 0,9 | Index Scan Backward |
+| Página 1000 | não medido antes | 64,3 | Index Scan Backward |
+| Página 15000 | 1147,0 | 1104,9 | Seq Scan (continua) |
+
+- As outras rotas também ficaram mais rápidas, mesmo sem mudança nelas. Minha explicação, que eu não medi, é que o `/pedidos` ocupava muito do banco, que está no limite de CPU, e liberar esse tempo ajuda as demais.
+- A memória do banco subiu cerca de 27 MiB (402,8 → 429,7 MiB, medianas). Não medi a causa; o índice novo é uma possibilidade.
+- O índice acelera leituras e deixa mais lentas as escritas em `pedidos`. A carga só lê, então esse custo não aparece nas medições.
+- A variação entre execuções foi de 9,46 a 10,77 req/s. Erros: 0% nas 3 execuções.
+- Limite: o `OFFSET` fundo (página 15000) continua caro. A paginação por chave resolveria, mas mudaria o funcionamento da rota e pode quebrar o contrato. Fica para `proximos-testes.md`.
