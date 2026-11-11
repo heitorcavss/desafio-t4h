@@ -1,0 +1,53 @@
+=== GET /pedidos?status=&pagina= (consulta da pagina, rotas.js), estado da mudanca 07 (commit e854ce8)
+=== A carga sorteia paginas de 1 a 1000 (carga/teste-carga.js). Mesma consulta em 3 paginas: 1, 500 e 1000 (20 por pagina).
+
+--- status = 'entregue', pagina 1 (OFFSET 0)
+Timing is on.
+                                                                             QUERY PLAN                                                                             
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.42..13.29 rows=20 width=299) (actual time=0.099..0.269 rows=20 loops=1)
+   Buffers: shared hit=23
+   ->  Index Scan Backward using pedidos_status_criado_em_id_idx on pedidos  (cost=0.42..79969.03 rows=124300 width=299) (actual time=0.096..0.260 rows=20 loops=1)
+         Index Cond: (status = 'entregue'::text)
+         Buffers: shared hit=23
+ Planning:
+   Buffers: shared hit=155 read=13
+ Planning Time: 14.148 ms
+ Execution Time: 1.191 ms
+(9 rows)
+
+Time: 61.037 ms
+
+--- status = 'entregue', pagina 500 (OFFSET 9980)
+Timing is on.
+                                                                               QUERY PLAN                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6421.07..6433.94 rows=20 width=299) (actual time=87.764..87.811 rows=20 loops=1)
+   Buffers: shared hit=10104 read=21
+   ->  Index Scan Backward using pedidos_status_criado_em_id_idx on pedidos  (cost=0.42..79969.03 rows=124300 width=299) (actual time=0.043..86.806 rows=10000 loops=1)
+         Index Cond: (status = 'entregue'::text)
+         Buffers: shared hit=10104 read=21
+ Planning:
+   Buffers: shared hit=168
+ Planning Time: 0.672 ms
+ Execution Time: 87.853 ms
+(9 rows)
+
+Time: 90.157 ms
+
+--- status = 'entregue', pagina 1000 (OFFSET 19980)
+Timing is on.
+                                                                               QUERY PLAN                                                                                
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=12854.59..12867.45 rows=20 width=299) (actual time=128.189..129.097 rows=20 loops=1)
+   Buffers: shared hit=19349 read=896
+   ->  Index Scan Backward using pedidos_status_criado_em_id_idx on pedidos  (cost=0.42..79969.03 rows=124300 width=299) (actual time=0.066..127.432 rows=20000 loops=1)
+         Index Cond: (status = 'entregue'::text)
+         Buffers: shared hit=19349 read=896
+ Planning:
+   Buffers: shared hit=168
+ Planning Time: 1.145 ms
+ Execution Time: 129.154 ms
+(9 rows)
+
+Time: 132.308 ms

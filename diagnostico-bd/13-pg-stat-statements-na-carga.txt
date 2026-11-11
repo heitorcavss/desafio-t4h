@@ -1,0 +1,84 @@
+=== Quais consultas mais consomem o banco durante a carga (estado da mudanca 07, commit e854ce8)
+
+Ferramenta: extensao pg_stat_statements do PostgreSQL 16
+(https://www.postgresql.org/docs/16/pgstatstatements.html).
+
+Como foi feito (para repetir):
+1. No docker-compose.yml, servico banco, acrescentei temporariamente:
+     command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]
+   e apliquei com: docker compose up -d
+2. No banco: CREATE EXTENSION pg_stat_statements;
+3. Rodei a carga com scripts/medir.sh (20 usuarios, 60 s, semente 42).
+   Quando o medir.sh mostrou "Medindo:" (fim do aquecimento), zerei as anotacoes:
+     SELECT pg_stat_statements_reset();
+   Quando mostrou "Conferindo o contrato" (fim da carga), li as anotacoes com as duas consultas abaixo.
+   Assim a lista tem so os 60 s medidos, sem o aquecimento e sem a conferencia de contrato.
+4. Depois desfiz a linha do docker-compose.yml e reiniciei o banco.
+
+A medicao de carga usada foi de rascunho (nao esta em resultados/), porque o modulo ligado muda as condicoes
+da regua. Este arquivo vale pela lista de consultas, nao pelos numeros de vazao.
+Limite: e uma execucao so. O tempo e de execucao (inclui espera por leitura de dados e por CPU), nao e CPU pura.
+So entram consultas que terminaram dentro dos 60 s.
+
+reset 18:14:47
+leitura 18:15:59
+
+--- Consulta 1: a do exemplo da documentacao oficial (secao Sample Output), sem alteracao
+SELECT query, calls, total_exec_time, rows, 100.0 * shared_blks_hit /
+       nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent
+  FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 5;
+
+                                            query                                            | calls |  total_exec_time   | rows |     hit_percent     
+---------------------------------------------------------------------------------------------+-------+--------------------+------+---------------------
+ SELECT * FROM pedidos WHERE status = $1 ORDER BY criado_em DESC, id DESC LIMIT $2 OFFSET $3 |    79 | 325719.94145499996 | 1580 | 90.7527470711287192
+ SELECT pr.id, pr.nome, pr.categoria,                                                       +|     8 |       126211.06528 |   80 | 42.3661110082715484
+             sum(i.quantidade) AS unidades,                                                 +|       |                    |      | 
+             sum(i.quantidade * i.preco_unitario_centavos) AS receita_centavos              +|       |                    |      | 
+        FROM itens_pedido i                                                                 +|       |                    |      | 
+        JOIN pedidos p ON p.id = i.pedido_id                                                +|       |                    |      | 
+        JOIN produtos pr ON pr.id = i.produto_id                                            +|       |                    |      | 
+       WHERE p.status <> $2                                                                 +|       |                    |      | 
+       GROUP BY pr.id, pr.nome, pr.categoria                                                +|       |                    |      | 
+       ORDER BY receita_centavos DESC, pr.id                                                +|       |                    |      | 
+       LIMIT $1                                                                              |       |                    |      | 
+ SELECT to_char(p.criado_em::date, $3) AS dia,                                              +|    37 |      106410.054249 |  259 | 92.5360533815865407
+             count(DISTINCT p.id) AS pedidos,                                               +|       |                    |      | 
+             sum(i.quantidade) AS itens,                                                    +|       |                    |      | 
+             sum(i.quantidade::bigint * i.preco_unitario_centavos) AS receita_centavos      +|       |                    |      | 
+        FROM pedidos p                                                                      +|       |                    |      | 
+        JOIN itens_pedido i ON i.pedido_id = p.id                                           +|       |                    |      | 
+       WHERE p.criado_em::date BETWEEN $1 AND $2                                            +|       |                    |      | 
+         AND p.status <> $4                                                                 +|       |                    |      | 
+       GROUP BY p.criado_em::date                                                           +|       |                    |      | 
+       ORDER BY p.criado_em::date                                                            |       |                    |      | 
+ SELECT * FROM produtos WHERE nome ILIKE $2 || $1 || $3 ORDER BY nome, id LIMIT $4           |    89 |  28530.33203299999 | 1780 | 99.1434310018903592
+ SELECT count(*) AS total FROM pedidos WHERE status = $1                                     |    79 | 24008.924843000004 |   79 | 71.4105769044435401
+(5 rows)
+
+
+--- Consulta 2: a mesma visao, com o texto da consulta cortado, a parte de cada consulta no tempo total,
+--- o tempo medio e os blocos lidos da memoria do banco (hit) e de fora dela (read)
+SELECT left(regexp_replace(query, '\s+', ' ', 'g'), 62) AS consulta,
+       calls,
+       round(total_exec_time) AS total_ms,
+       round((100 * total_exec_time / sum(total_exec_time) OVER ())::numeric, 1) AS pct_do_total,
+       round(mean_exec_time) AS medio_ms,
+       rows,
+       shared_blks_hit, shared_blks_read,
+       round(100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0), 1) AS hit_percent
+  FROM pg_stat_statements
+ WHERE query NOT ILIKE '%pg_stat_statements%'
+ ORDER BY total_exec_time DESC LIMIT 12;
+
+                            consulta                            | calls | total_ms | pct_do_total | medio_ms | rows | shared_blks_hit | shared_blks_read | hit_percent 
+----------------------------------------------------------------+-------+----------+--------------+----------+------+-----------------+------------------+-------------
+ SELECT * FROM pedidos WHERE status = $1 ORDER BY criado_em DES |    79 |   325720 |         52.2 |     4123 | 1580 |          768752 |            78332 |        90.8
+ SELECT pr.id, pr.nome, pr.categoria, sum(i.quantidade) AS unid |     8 |   126211 |         20.2 |    15776 |   80 |           43485 |            59156 |        42.4
+ SELECT to_char(p.criado_em::date, $3) AS dia, count(DISTINCT p |    37 |   106410 |         17.0 |     2876 |  259 |          626966 |            50571 |        92.5
+ SELECT * FROM produtos WHERE nome ILIKE $2 || $1 || $3 ORDER B |    89 |    28530 |          4.6 |      321 | 1780 |           16783 |              145 |        99.1
+ SELECT count(*) AS total FROM pedidos WHERE status = $1        |    79 |    24009 |          3.8 |      304 |   79 |           36850 |            14753 |        71.4
+ SELECT * FROM clientes WHERE id = $1                           |   270 |     5818 |          0.9 |       22 |  270 |             288 |              522 |        35.6
+ SELECT p.id AS pedido_id, p.status, p.criado_em, i.id AS item_ |   121 |     5353 |          0.9 |       44 | 1745 |            7355 |             1288 |        85.1
+ SELECT * FROM clientes WHERE lower(email) = lower($1) ORDER BY |    90 |     2304 |          0.4 |       26 |   90 |             151 |              218 |        40.9
+(8 rows)
+
