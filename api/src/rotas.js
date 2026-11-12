@@ -118,8 +118,9 @@ rotas.get('/pedidos', assincrono(async (req, res) => {
   if (pagina === null) return res.status(400).json({ erro: 'pagina invalida' });
 
   const [contagem] = await consultar('SELECT count(*) AS total FROM pedidos WHERE status = $1', [status]);
+  // Só as 4 colunas que a resposta usa: com elas no índice, o banco não precisa abrir a tabela.
   const linhas = await consultar(
-    'SELECT * FROM pedidos WHERE status = $1 ORDER BY criado_em DESC, id DESC LIMIT $2 OFFSET $3',
+    'SELECT id, cliente_id, status, criado_em FROM pedidos WHERE status = $1 ORDER BY criado_em DESC, id DESC LIMIT $2 OFFSET $3',
     [status, TAMANHO_PAGINA, (pagina - 1) * TAMANHO_PAGINA],
   );
 
