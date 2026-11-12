@@ -1,0 +1,17 @@
+Medição: 08-intercalado
+Carga: 20 usuários virtuais por 60s
+
+Requisições:        850
+Requisições/s:      13.42
+Tempo de resposta:  mediana 708.0 ms | p95 4259.7 ms | p99 19499.2 ms
+Erros:              0.00%
+
+Por rota:
+rota                  req       mediana       p95           p99           erros   
+cliente               223       495.8 ms      1702.3 ms     2098.5 ms     0.0%    
+cliente-por-email     130       494.8 ms      1395.7 ms     4497.2 ms     0.0%    
+pedidos-do-cliente    180       908.7 ms      2443.6 ms     4180.8 ms     0.0%    
+pedidos-por-status    120       1199.9 ms     3005.1 ms     4765.5 ms     0.0%    
+busca-produtos        128       700.3 ms      1379.9 ms     1948.6 ms     0.0%    
+vendas-por-dia        56        3397.7 ms     12031.3 ms    19686.0 ms    0.0%    
+top-produtos          13        20001.9 ms    26410.3 ms    27796.6 ms    0.0%    
