@@ -1,0 +1,23 @@
+=== GET /relatorios/top-produtos?limite=10 (consulta do rotas.js), mudanca 09 (commit 76101e8)
+=== A rota le a visao materializada receita_por_produto (banco/07-top-produtos-materializada.sql). Comparar com o diagnostico 15.
+Timing is on.
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=863.09..863.12 rows=10 width=57) (actual time=4.215..4.229 rows=10 loops=1)
+   Buffers: shared hit=262
+   ->  Sort  (cost=863.09..911.11 rows=19206 width=57) (actual time=4.207..4.216 rows=10 loops=1)
+         Sort Key: receita_centavos DESC, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=262
+         ->  Seq Scan on receita_por_produto  (cost=0.00..448.06 rows=19206 width=57) (actual time=0.016..2.019 rows=19206 loops=1)
+               Buffers: shared hit=256
+ Planning:
+   Buffers: shared hit=55
+ Planning Time: 0.697 ms
+ Execution Time: 4.487 ms
+(12 rows)
+
+Time: 22.073 ms
+
+--- tamanho da visao materializada
+receita_por_produto = 2048 kB, 19206 linhas
