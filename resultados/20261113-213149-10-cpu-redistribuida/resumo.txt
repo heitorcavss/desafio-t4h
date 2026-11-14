@@ -1,0 +1,17 @@
+Medição: 10-cpu-redistribuida
+Carga: 20 usuários virtuais por 60s
+
+Requisições:        3317
+Requisições/s:      52.23
+Tempo de resposta:  mediana 302.3 ms | p95 897.3 ms | p99 1326.9 ms
+Erros:              0.00%
+
+Por rota:
+rota                  req       mediana       p95           p99           erros   
+cliente               860       192.7 ms      373.2 ms      501.5 ms      0.0%    
+cliente-por-email     480       194.3 ms      315.1 ms      513.5 ms      0.0%    
+pedidos-do-cliente    682       309.3 ms      593.5 ms      1405.5 ms     0.0%    
+pedidos-por-status    474       601.1 ms      1206.6 ms     2110.6 ms     0.0%    
+busca-produtos        499       486.7 ms      697.2 ms      1327.6 ms     0.0%    
+vendas-por-dia        265       699.0 ms      994.1 ms      1285.0 ms     0.0%    
+top-produtos          57        208.8 ms      313.0 ms      409.9 ms      0.0%    
