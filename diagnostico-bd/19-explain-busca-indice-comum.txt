@@ -1,0 +1,694 @@
+=== Busca de produtos: Seq Scan (A) contra indice comum B-tree em produtos(nome) (B) e em produtos(nome, id) (C). Teste de viabilidade ANTES de aplicar a mudanca, codigo no commit 743fad3.
+=== Os 12 termos da carga (carga/teste-carga.js). Uma execucao de cada, apos uma rodada de aquecimento, sem carga. Indices criados so para o teste e removidos no fim.
+Timing is on.
+Time: 37.255 ms
+Time: 8.618 ms
+Time: 8.535 ms
+Time: 13.056 ms
+Time: 8.384 ms
+Time: 8.288 ms
+Time: 14.553 ms
+Time: 19.056 ms
+Time: 18.718 ms
+Time: 16.846 ms
+Time: 12.433 ms
+Time: 11.003 ms
+################ PARTE A: SEM indice em nome (estado atual)
+##### A: SEM indice em nome (estado atual) busca q=cadeira
+                                                       QUERY PLAN                                                       
+------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=466.88..466.93 rows=20 width=44) (actual time=13.946..13.949 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=466.88..469.40 rows=1010 width=44) (actual time=13.945..13.946 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=1010 width=44) (actual time=0.013..13.427 rows=1000 loops=1)
+               Filter: (nome ~~* '%cadeira%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=190
+ Planning Time: 0.114 ms
+ Execution Time: 13.971 ms
+(12 rows)
+
+Time: 15.743 ms
+##### A: SEM indice em nome (estado atual) busca q=mesa
+                                                       QUERY PLAN                                                       
+------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=466.88..466.93 rows=20 width=44) (actual time=15.745..15.749 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=466.88..469.40 rows=1010 width=44) (actual time=15.744..15.746 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=1010 width=44) (actual time=0.005..15.274 rows=1000 loops=1)
+               Filter: (nome ~~* '%mesa%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=190
+ Planning Time: 0.098 ms
+ Execution Time: 15.761 ms
+(12 rows)
+
+Time: 16.114 ms
+##### A: SEM indice em nome (estado atual) busca q=lumin
+                                                      QUERY PLAN                                                       
+-----------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=466.88..466.93 rows=20 width=44) (actual time=9.941..9.943 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=466.88..469.40 rows=1010 width=44) (actual time=9.941..9.941 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 28kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=1010 width=44) (actual time=0.007..9.484 rows=1000 loops=1)
+               Filter: (nome ~~* '%lumin%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=190
+ Planning Time: 0.129 ms
+ Execution Time: 9.953 ms
+(12 rows)
+
+Time: 10.283 ms
+##### A: SEM indice em nome (estado atual) busca q=teclado
+                                                      QUERY PLAN                                                       
+-----------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=466.88..466.93 rows=20 width=44) (actual time=10.103..10.107 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=466.88..469.40 rows=1010 width=44) (actual time=10.102..10.104 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=1010 width=44) (actual time=0.009..9.717 rows=1000 loops=1)
+               Filter: (nome ~~* '%teclado%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=190
+ Planning Time: 0.160 ms
+ Execution Time: 10.124 ms
+(12 rows)
+
+Time: 10.549 ms
+##### A: SEM indice em nome (estado atual) busca q=monitor
+                                                       QUERY PLAN                                                       
+------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=466.88..466.93 rows=20 width=44) (actual time=12.140..12.143 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=466.88..469.40 rows=1010 width=44) (actual time=12.139..12.141 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=1010 width=44) (actual time=0.010..11.663 rows=1000 loops=1)
+               Filter: (nome ~~* '%monitor%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=190
+ Planning Time: 0.135 ms
+ Execution Time: 12.154 ms
+(12 rows)
+
+Time: 12.515 ms
+##### A: SEM indice em nome (estado atual) busca q=ergo
+                                                      QUERY PLAN                                                       
+-----------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=547.50..547.55 rows=20 width=44) (actual time=7.773..7.775 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=547.50..557.60 rows=4040 width=44) (actual time=7.772..7.773 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 28kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=4040 width=44) (actual time=0.006..7.487 rows=2000 loops=1)
+               Filter: (nome ~~* '%ergo%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.130 ms
+ Execution Time: 7.842 ms
+(12 rows)
+
+Time: 8.141 ms
+##### A: SEM indice em nome (estado atual) busca q=sem fio
+                                                     QUERY PLAN                                                     
+--------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=8.316..8.318 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=8.315..8.316 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.046..8.029 rows=2000 loops=1)
+               Filter: (nome ~~* '%sem fio%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.085 ms
+ Execution Time: 8.327 ms
+(12 rows)
+
+Time: 8.797 ms
+##### A: SEM indice em nome (estado atual) busca q=portatil
+                                                     QUERY PLAN                                                     
+--------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=8.901..8.904 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=8.900..8.901 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.040..8.543 rows=2000 loops=1)
+               Filter: (nome ~~* '%portatil%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.091 ms
+ Execution Time: 8.941 ms
+(12 rows)
+
+Time: 9.229 ms
+##### A: SEM indice em nome (estado atual) busca q=modelo 12
+                                                     QUERY PLAN                                                     
+--------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=8.557..8.559 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=8.556..8.557 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.010..8.406 rows=1111 loops=1)
+               Filter: (nome ~~* '%modelo 12%'::text)
+               Rows Removed by Filter: 18889
+               Buffers: shared hit=190
+ Planning Time: 0.092 ms
+ Execution Time: 8.568 ms
+(12 rows)
+
+Time: 8.859 ms
+##### A: SEM indice em nome (estado atual) busca q=slim
+                                                      QUERY PLAN                                                       
+-----------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=542.13..542.18 rows=20 width=44) (actual time=7.850..7.853 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=542.13..551.72 rows=3838 width=44) (actual time=7.850..7.851 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=3838 width=44) (actual time=0.096..7.564 rows=2000 loops=1)
+               Filter: (nome ~~* '%slim%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.155 ms
+ Execution Time: 7.864 ms
+(12 rows)
+
+Time: 8.461 ms
+##### A: SEM indice em nome (estado atual) busca q=reforcada
+                                                      QUERY PLAN                                                       
+-----------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=547.50..547.55 rows=20 width=44) (actual time=9.246..9.248 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=547.50..557.60 rows=4040 width=44) (actual time=9.245..9.246 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=4040 width=44) (actual time=0.070..8.918 rows=2000 loops=1)
+               Filter: (nome ~~* '%reforcada%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.093 ms
+ Execution Time: 9.256 ms
+(12 rows)
+
+Time: 9.590 ms
+##### A: SEM indice em nome (estado atual) busca q=webcam
+                                                      QUERY PLAN                                                      
+----------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=461.50..461.55 rows=20 width=44) (actual time=7.380..7.382 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=461.50..463.52 rows=808 width=44) (actual time=7.379..7.380 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=808 width=44) (actual time=0.032..7.117 rows=1000 loops=1)
+               Filter: (nome ~~* '%webcam%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=190
+ Planning Time: 0.077 ms
+ Execution Time: 7.390 ms
+(12 rows)
+
+Time: 7.739 ms
+CREATE INDEX
+Time: 128.979 ms
+ANALYZE
+Time: 118.082 ms
+ tamanho_indice_nome 
+---------------------
+ 968 kB
+(1 row)
+
+Time: 2.502 ms
+Time: 4.701 ms
+Time: 12.470 ms
+Time: 9.244 ms
+Time: 26.548 ms
+Time: 15.919 ms
+Time: 0.900 ms
+Time: 10.337 ms
+Time: 8.881 ms
+Time: 9.973 ms
+Time: 1.116 ms
+Time: 0.988 ms
+Time: 11.315 ms
+################ PARTE B: COM indice (nome)
+##### B: COM indice (nome) busca q=cadeira
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.88..34.31 rows=20 width=44) (actual time=1.209..1.212 rows=20 loops=1)
+   Buffers: shared hit=2034
+   ->  Incremental Sort  (cost=1.88..1639.73 rows=1010 width=44) (actual time=1.209..1.210 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=2034
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=1010 width=44) (actual time=1.178..1.194 rows=21 loops=1)
+               Filter: (nome ~~* '%cadeira%'::text)
+               Rows Removed by Filter: 2000
+               Buffers: shared hit=2034
+ Planning Time: 0.120 ms
+ Execution Time: 1.227 ms
+(13 rows)
+
+Time: 1.654 ms
+##### B: COM indice (nome) busca q=mesa
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.88..34.31 rows=20 width=44) (actual time=7.374..7.377 rows=20 loops=1)
+   Buffers: shared hit=11088
+   ->  Incremental Sort  (cost=1.88..1639.73 rows=1010 width=44) (actual time=7.373..7.375 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=11088
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=1010 width=44) (actual time=7.340..7.356 rows=21 loops=1)
+               Filter: (nome ~~* '%mesa%'::text)
+               Rows Removed by Filter: 11000
+               Buffers: shared hit=11088
+ Planning Time: 0.098 ms
+ Execution Time: 7.390 ms
+(13 rows)
+
+Time: 7.779 ms
+##### B: COM indice (nome) busca q=lumin
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.88..34.31 rows=20 width=44) (actual time=8.419..8.423 rows=20 loops=1)
+   Buffers: shared hit=10082
+   ->  Incremental Sort  (cost=1.88..1639.73 rows=1010 width=44) (actual time=8.418..8.420 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+         Buffers: shared hit=10082
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=1010 width=44) (actual time=8.376..8.395 rows=21 loops=1)
+               Filter: (nome ~~* '%lumin%'::text)
+               Rows Removed by Filter: 10000
+               Buffers: shared hit=10082
+ Planning Time: 0.264 ms
+ Execution Time: 8.444 ms
+(13 rows)
+
+Time: 9.073 ms
+##### B: COM indice (nome) busca q=teclado
+                                                                  QUERY PLAN                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.88..34.31 rows=20 width=44) (actual time=13.151..13.155 rows=20 loops=1)
+   Buffers: shared hit=18129
+   ->  Incremental Sort  (cost=1.88..1639.73 rows=1010 width=44) (actual time=13.150..13.152 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=18129
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=1010 width=44) (actual time=13.114..13.129 rows=21 loops=1)
+               Filter: (nome ~~* '%teclado%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=18129
+ Planning Time: 0.141 ms
+ Execution Time: 13.171 ms
+(13 rows)
+
+Time: 13.683 ms
+##### B: COM indice (nome) busca q=monitor
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.88..34.31 rows=20 width=44) (actual time=9.740..9.742 rows=20 loops=1)
+   Buffers: shared hit=13100
+   ->  Incremental Sort  (cost=1.88..1639.73 rows=1010 width=44) (actual time=9.739..9.740 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=13100
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=1010 width=44) (actual time=9.712..9.723 rows=21 loops=1)
+               Filter: (nome ~~* '%monitor%'::text)
+               Rows Removed by Filter: 13000
+               Buffers: shared hit=13100
+ Planning Time: 0.174 ms
+ Execution Time: 9.757 ms
+(13 rows)
+
+Time: 10.297 ms
+##### B: COM indice (nome) busca q=ergo
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.69..9.48 rows=20 width=44) (actual time=0.466..0.468 rows=20 loops=1)
+   Buffers: shared hit=324
+   ->  Incremental Sort  (cost=0.69..1776.08 rows=4040 width=44) (actual time=0.465..0.466 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+         Buffers: shared hit=324
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=4040 width=44) (actual time=0.433..0.450 rows=21 loops=1)
+               Filter: (nome ~~* '%ergo%'::text)
+               Rows Removed by Filter: 300
+               Buffers: shared hit=324
+ Planning Time: 0.210 ms
+ Execution Time: 0.480 ms
+(13 rows)
+
+Time: 1.017 ms
+##### B: COM indice (nome) busca q=sem fio
+                                                     QUERY PLAN                                                     
+--------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=9.966..9.971 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=9.965..9.967 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.141..9.583 rows=2000 loops=1)
+               Filter: (nome ~~* '%sem fio%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.176 ms
+ Execution Time: 9.988 ms
+(12 rows)
+
+Time: 10.532 ms
+##### B: COM indice (nome) busca q=portatil
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=15.552..15.557 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=15.551..15.553 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.049..14.932 rows=2000 loops=1)
+               Filter: (nome ~~* '%portatil%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.129 ms
+ Execution Time: 15.573 ms
+(12 rows)
+
+Time: 16.395 ms
+##### B: COM indice (nome) busca q=modelo 12
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=12.757..12.760 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=12.756..12.757 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.022..12.513 rows=1111 loops=1)
+               Filter: (nome ~~* '%modelo 12%'::text)
+               Rows Removed by Filter: 18889
+               Buffers: shared hit=190
+ Planning Time: 0.436 ms
+ Execution Time: 12.781 ms
+(12 rows)
+
+Time: 13.585 ms
+##### B: COM indice (nome) busca q=slim
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.71..9.92 rows=20 width=44) (actual time=0.928..0.931 rows=20 loops=1)
+   Buffers: shared hit=928
+   ->  Incremental Sort  (cost=0.71..1766.99 rows=3838 width=44) (actual time=0.927..0.929 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=928
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=3838 width=44) (actual time=0.904..0.915 rows=21 loops=1)
+               Filter: (nome ~~* '%slim%'::text)
+               Rows Removed by Filter: 900
+               Buffers: shared hit=928
+ Planning Time: 0.211 ms
+ Execution Time: 0.946 ms
+(13 rows)
+
+Time: 1.432 ms
+##### B: COM indice (nome) busca q=reforcada
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.69..9.48 rows=20 width=44) (actual time=0.724..0.727 rows=20 loops=1)
+   Buffers: shared hit=727
+   ->  Incremental Sort  (cost=0.69..1776.08 rows=4040 width=44) (actual time=0.723..0.724 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=727
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=4040 width=44) (actual time=0.689..0.707 rows=21 loops=1)
+               Filter: (nome ~~* '%reforcada%'::text)
+               Rows Removed by Filter: 700
+               Buffers: shared hit=727
+ Planning Time: 0.335 ms
+ Execution Time: 0.740 ms
+(13 rows)
+
+Time: 1.416 ms
+##### B: COM indice (nome) busca q=webcam
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=2.27..42.58 rows=20 width=44) (actual time=14.522..14.526 rows=20 loops=1)
+   Buffers: shared hit=19135
+   ->  Incremental Sort  (cost=2.27..1630.64 rows=808 width=44) (actual time=14.521..14.523 rows=20 loops=1)
+         Sort Key: nome, id
+         Presorted Key: nome
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         Buffers: shared hit=19135
+         ->  Index Scan using teste_nome_idx on produtos  (cost=0.29..1594.28 rows=808 width=44) (actual time=14.484..14.497 rows=21 loops=1)
+               Filter: (nome ~~* '%webcam%'::text)
+               Rows Removed by Filter: 19000
+               Buffers: shared hit=19135
+ Planning Time: 0.184 ms
+ Execution Time: 14.556 ms
+(13 rows)
+
+Time: 15.073 ms
+DROP INDEX
+Time: 18.890 ms
+CREATE INDEX
+Time: 227.074 ms
+ANALYZE
+Time: 86.388 ms
+ tamanho_indice_nome_id 
+------------------------
+ 1064 kB
+(1 row)
+
+Time: 0.320 ms
+Time: 2.356 ms
+Time: 8.244 ms
+Time: 8.256 ms
+Time: 14.108 ms
+Time: 8.329 ms
+Time: 0.680 ms
+Time: 9.696 ms
+Time: 15.354 ms
+Time: 14.430 ms
+Time: 1.835 ms
+Time: 0.995 ms
+Time: 20.398 ms
+################ PARTE C: COM indice (nome, id)
+##### C: COM indice (nome, id) busca q=cadeira
+                                                                QUERY PLAN                                                                
+------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..32.80 rows=20 width=44) (actual time=2.970..2.995 rows=20 loops=1)
+   Buffers: shared hit=2034
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=1010 width=44) (actual time=2.968..2.990 rows=20 loops=1)
+         Filter: (nome ~~* '%cadeira%'::text)
+         Rows Removed by Filter: 2000
+         Buffers: shared hit=2034
+ Planning Time: 0.316 ms
+ Execution Time: 3.026 ms
+(8 rows)
+
+Time: 3.791 ms
+##### C: COM indice (nome, id) busca q=mesa
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..32.80 rows=20 width=44) (actual time=10.386..10.405 rows=20 loops=1)
+   Buffers: shared hit=11094
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=1010 width=44) (actual time=10.384..10.400 rows=20 loops=1)
+         Filter: (nome ~~* '%mesa%'::text)
+         Rows Removed by Filter: 11000
+         Buffers: shared hit=11094
+ Planning Time: 0.428 ms
+ Execution Time: 10.429 ms
+(8 rows)
+
+Time: 11.507 ms
+##### C: COM indice (nome, id) busca q=lumin
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..32.80 rows=20 width=44) (actual time=11.752..11.779 rows=20 loops=1)
+   Buffers: shared hit=10087
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=1010 width=44) (actual time=11.750..11.774 rows=20 loops=1)
+         Filter: (nome ~~* '%lumin%'::text)
+         Rows Removed by Filter: 10000
+         Buffers: shared hit=10087
+ Planning Time: 0.146 ms
+ Execution Time: 11.797 ms
+(8 rows)
+
+Time: 12.335 ms
+##### C: COM indice (nome, id) busca q=teclado
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..32.80 rows=20 width=44) (actual time=18.374..18.388 rows=20 loops=1)
+   Buffers: shared hit=18139
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=1010 width=44) (actual time=18.372..18.384 rows=20 loops=1)
+         Filter: (nome ~~* '%teclado%'::text)
+         Rows Removed by Filter: 18000
+         Buffers: shared hit=18139
+ Planning Time: 0.317 ms
+ Execution Time: 18.415 ms
+(8 rows)
+
+Time: 19.140 ms
+##### C: COM indice (nome, id) busca q=monitor
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..32.80 rows=20 width=44) (actual time=12.785..12.810 rows=20 loops=1)
+   Buffers: shared hit=13107
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=1010 width=44) (actual time=12.783..12.805 rows=20 loops=1)
+         Filter: (nome ~~* '%monitor%'::text)
+         Rows Removed by Filter: 13000
+         Buffers: shared hit=13107
+ Planning Time: 0.119 ms
+ Execution Time: 12.827 ms
+(8 rows)
+
+Time: 13.352 ms
+##### C: COM indice (nome, id) busca q=ergo
+                                                                QUERY PLAN                                                                
+------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..8.42 rows=20 width=44) (actual time=0.339..0.364 rows=20 loops=1)
+   Buffers: shared hit=324
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=4040 width=44) (actual time=0.338..0.361 rows=20 loops=1)
+         Filter: (nome ~~* '%ergo%'::text)
+         Rows Removed by Filter: 300
+         Buffers: shared hit=324
+ Planning Time: 0.157 ms
+ Execution Time: 0.376 ms
+(8 rows)
+
+Time: 0.865 ms
+##### C: COM indice (nome, id) busca q=sem fio
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=11.010..11.012 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=11.009..11.010 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.137..10.606 rows=2000 loops=1)
+               Filter: (nome ~~* '%sem fio%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.144 ms
+ Execution Time: 11.025 ms
+(12 rows)
+
+Time: 11.531 ms
+##### C: COM indice (nome, id) busca q=portatil
+                                                     QUERY PLAN                                                     
+--------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=8.986..8.989 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=8.985..8.987 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.044..8.605 rows=2000 loops=1)
+               Filter: (nome ~~* '%portatil%'::text)
+               Rows Removed by Filter: 18000
+               Buffers: shared hit=190
+ Planning Time: 0.113 ms
+ Execution Time: 8.999 ms
+(12 rows)
+
+Time: 9.462 ms
+##### C: COM indice (nome, id) busca q=modelo 12
+                                                     QUERY PLAN                                                     
+--------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=440.01..440.01 rows=2 width=44) (actual time=9.701..9.704 rows=20 loops=1)
+   Buffers: shared hit=190
+   ->  Sort  (cost=440.01..440.01 rows=2 width=44) (actual time=9.700..9.702 rows=20 loops=1)
+         Sort Key: nome, id
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=190
+         ->  Seq Scan on produtos  (cost=0.00..440.00 rows=2 width=44) (actual time=0.012..9.541 rows=1111 loops=1)
+               Filter: (nome ~~* '%modelo 12%'::text)
+               Rows Removed by Filter: 18889
+               Buffers: shared hit=190
+ Planning Time: 0.113 ms
+ Execution Time: 9.719 ms
+(12 rows)
+
+Time: 10.167 ms
+##### C: COM indice (nome, id) busca q=slim
+                                                                QUERY PLAN                                                                
+------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..8.84 rows=20 width=44) (actual time=0.680..0.735 rows=20 loops=1)
+   Buffers: shared hit=927
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=3838 width=44) (actual time=0.676..0.729 rows=20 loops=1)
+         Filter: (nome ~~* '%slim%'::text)
+         Rows Removed by Filter: 900
+         Buffers: shared hit=927
+ Planning Time: 0.174 ms
+ Execution Time: 0.749 ms
+(8 rows)
+
+Time: 1.186 ms
+##### C: COM indice (nome, id) busca q=reforcada
+                                                                QUERY PLAN                                                                
+------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..8.42 rows=20 width=44) (actual time=0.722..0.739 rows=20 loops=1)
+   Buffers: shared hit=726
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=4040 width=44) (actual time=0.722..0.737 rows=20 loops=1)
+         Filter: (nome ~~* '%reforcada%'::text)
+         Rows Removed by Filter: 700
+         Buffers: shared hit=726
+ Planning Time: 0.186 ms
+ Execution Time: 0.751 ms
+(8 rows)
+
+Time: 1.122 ms
+##### C: COM indice (nome, id) busca q=webcam
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..40.93 rows=20 width=44) (actual time=10.720..10.734 rows=20 loops=1)
+   Buffers: shared hit=19146
+   ->  Index Scan using teste_nome_id_idx on produtos  (cost=0.29..1642.29 rows=808 width=44) (actual time=10.719..10.730 rows=20 loops=1)
+         Filter: (nome ~~* '%webcam%'::text)
+         Rows Removed by Filter: 19000
+         Buffers: shared hit=19146
+ Planning Time: 0.214 ms
+ Execution Time: 10.800 ms
+(8 rows)
+
+Time: 11.262 ms
+DROP INDEX
+Time: 18.346 ms
+"##### removidos os indices de teste"
+                 List of relations
+ Schema |     Name      | Type  | Owner |  Table   
+--------+---------------+-------+-------+----------
+ public | produtos_pkey | index | loja  | produtos
+(1 row)
+
