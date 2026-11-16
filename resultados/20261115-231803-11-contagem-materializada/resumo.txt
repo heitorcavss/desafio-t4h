@@ -1,0 +1,17 @@
+Medição: 11-contagem-materializada
+Carga: 20 usuários virtuais por 60s
+
+Requisições:        6317
+Requisições/s:      101.73
+Tempo de resposta:  mediana 186.9 ms | p95 440.3 ms | p99 783.1 ms
+Erros:              0.00%
+
+Por rota:
+rota                  req       mediana       p95           p99           erros   
+cliente               1599      99.4 ms       200.1 ms      301.0 ms      0.0%    
+cliente-por-email     939       100.0 ms      207.9 ms      373.1 ms      0.0%    
+pedidos-do-cliente    1340      193.1 ms      386.5 ms      485.9 ms      0.0%    
+pedidos-por-status    914       194.3 ms      386.2 ms      680.5 ms      0.0%    
+busca-produtos        929       294.3 ms      487.1 ms      691.2 ms      0.0%    
+vendas-por-dia        488       403.6 ms      801.5 ms      1195.8 ms     0.0%    
+top-produtos          108       106.3 ms      204.6 ms      309.2 ms      0.0%    
