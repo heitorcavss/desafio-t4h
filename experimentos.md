@@ -284,7 +284,7 @@ Na página 1000, o plano foi de `Index Scan` para `Index Only Scan`, com `Heap F
 - **A CPU por requisição não mudou** (cerca de 2,3 nos dois casos, conta feita dividindo a CPU média do banco pela vazão). Ou seja, o ganho de vazão vem de o banco ter mais CPU disponível, e não de cada requisição gastar menos.
 - **A API não travou, mas chegou ao teto.** Pelo `recursos.csv`, a média da API ficou em 11,7% a 15,2% e o máximo foi 19,4% e 18,2% nas execuções 2 e 3. Na execução 1 houve um ponto de 33,0%, acima do teto de 30%, e 2 pontos acima de 28%. Foi pontual, sem ficar encostada no teto. Não sei dizer se esse pico atrasou alguma resposta.
 - **Custo:** nenhum recurso a mais (o total continua 1,5 CPU), mas a API tem menos folga: o teto dela caiu de 50% para 30% de 1 CPU.
-- **Memória do banco:** 185,1 MiB na 10 contra 445,4 e 485,2 MiB na referência. Não sei explicar a diferença e não verifiquei a causa. Não uso esse número como ganho.
+- **Memória do banco:** 185,1 MiB na 10 contra 445,4 e 485,2 MiB na referência. Não sei explicar a diferença e não verifiquei a causa. Não uso esse número como ganho. Depois, nas 3 execuções de `10-controle` (mesmo código e mesmos limites da mudança 10, medidas em 15/11), a memória média do banco ficou entre 456,9 e 490,9 MiB, perto da referência: os 185,1 MiB não se repetiram. Continuo sem saber a causa.
 - **Limite:** são só 2 execuções de referência e 3 da mudança, todas no mesmo dia. Uma máquina diferente ou outro dia podem dar outro resultado.
 - **Uso de IA:** o Claude Code conferiu o contrato; os números vêm do `medir.sh`.
 
