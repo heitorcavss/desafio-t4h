@@ -4,6 +4,76 @@ Aplicação do desafio técnico da vaga de estágio em Pesquisa e Inovação da 
 
 A aplicação é a API de uma loja fictícia, em Node.js (Express) com PostgreSQL 16, rodando em containers. Ela funciona, mas fica lenta sob carga e gasta mais recursos do que deveria. Todos os dados são sintéticos e gerados na primeira subida: 100 mil clientes, 20 mil produtos, 500 mil pedidos e 1,5 milhão de itens de pedido.
 
+## O problema
+
+A aplicação é a API de uma loja fictícia, e ela era muito lenta. Sob carga, os usuários esperavam muito por uma resposta, e a experiência era ruim.
+
+Medida com 20 usuários simultâneos durante 60 segundos, a aplicação original tinha:
+
+- **Vazão** (requisições por segundo, req/s): 1,68
+- **Tempo típico** (mediana): 2097,7 ms, cerca de 2 segundos
+- **Tempo dos lentos** (p95): 41966,6 ms. Uma em cada vinte requisições esperava mais de 42 segundos.
+
+Três problemas explicam boa parte disso:
+
+- O banco lia tabelas inteiras, muitas vezes sem necessidade, para achar poucas linhas.
+- A API fazia sozinha algumas operações que o banco faria melhor.
+- O banco refazia, a cada chamada, contas que dão sempre o mesmo resultado.
+
+Os números vêm de [`resultados/`](resultados/) (medições `00-linha-de-base`).
+
+## Resumo dos resultados
+
+Foram 11 mudanças, cada uma medida 3 vezes (mediana). Todas mantiveram o contrato, ou seja, cada rota continuou devolvendo o mesmo. Os números abaixo são o resultado de cada mudança; os detalhes (hipótese, fonte, CPU, memória e pastas) estão no [`experimentos.md`](experimentos.md).
+
+| # | Mudança | Status | Vazão (req/s) | Tempo dos lentos (p95, ms) |
+|---|---|---|---|---|
+| 00 | Aplicação original | linha de base | 1,68 | 41966,6 |
+| 01 | Índices nas colunas mais consultadas | aplicada e medida | 3,93 | 16433,0 |
+| 02 | Um `JOIN` no lugar de várias consultas, em `/clientes/:id/pedidos` | aplicada e medida | 6,27 | 16796,6 |
+| 03 | Pool de conexões (`max` 10) | aplicada e medida | 6,85 | 8820,5 |
+| 04 | Pool com `max` 20 (o pool voltou para `max` 10 depois do teste) | **sem ganho** | 4,03 | 24147,3 |
+| 05 | Índice em `(status, criado_em, id)` para `/pedidos` | aplicada e medida | 9,85 | 7682,8 |
+| 06 | `vendas-por-dia` somando no SQL | aplicada e medida | 7,68 | 8593,3 |
+| 07 | Índice na data de `criado_em` (a consulta melhorou, a rota não) | **sem ganho** | 7,97 | 8231,3 |
+| 08 | `/pedidos` respondendo só pelo índice | aplicada e medida | 13,42 | 4259,7 |
+| 09 | `top-produtos` lendo de uma visão materializada | aplicada e medida | 40,70 | 1125,8 |
+| 10 | CPU redistribuída (banco 1,2 e API 0,3) | aplicada e medida | 52,52 | 897,3 |
+| 11 | Total do `/pedidos` em uma visão materializada | aplicada e medida | 101,73 | 440,3 |
+
+**De onde partiu e onde chegou:** a vazão foi de 1,68 para 101,73 req/s e o tempo dos lentos (p95) de 41966,6 para 440,3 ms.
+
+**Custos e limites:**
+
+- As visões materializadas (09 e 11) guardam uma foto dos dados. Se os pedidos mudarem, elas ficam velhas até serem atualizadas.
+- A API ficou com menos folga de CPU (0,3 em vez de 0,5).
+- As medições são de uma máquina só, e ela varia entre sessões. A linha de base e a mudança 11 foram medidas em dias diferentes, então a comparação entre as duas mostra o sentido da mudança, não o valor exato.
+
+## Como repetir
+
+As instruções completas, do zero, estão mais abaixo. Para este experimento, a diferença é de onde você clona: use **este** repositório, e não o `t4h-desafios`, que traz só a aplicação original.
+
+```bash
+git clone https://github.com/heitorcavss/desafio-t4h.git
+cd desafio-t4h
+docker compose up -d --build
+curl http://127.0.0.1:3000/saude
+scripts/medir.sh 11-minha-repeticao
+```
+
+O `up -d --build` sobe a versão final, com as 11 mudanças. O `curl` deve responder `{"status":"ok"}`. O `medir.sh` mede com os parâmetros padrão, que são os que usei.
+
+Para medir uma versão anterior, volte ao commit dela e recrie o banco. Os commits estão no [`experimentos.md`](experimentos.md):
+
+```bash
+git switch --detach <commit>
+docker compose down -v && docker compose up -d --build
+```
+
+- A linha de base é o commit `8134893`.
+- Parâmetros de todas as medições: 20 usuários, 60 s, semente 42.
+- O passo a passo completo está em [Como medir](#como-medir).
+
 ## Prazo e entrega
 
 - **Prazo e entregas:** estão no enunciado enviado na largada
