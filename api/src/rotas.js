@@ -117,7 +117,9 @@ rotas.get('/pedidos', assincrono(async (req, res) => {
   const pagina = req.query.pagina === undefined ? 1 : inteiroPositivo(req.query.pagina);
   if (pagina === null) return res.status(400).json({ erro: 'pagina invalida' });
 
-  const [contagem] = await consultar('SELECT count(*) AS total FROM pedidos WHERE status = $1', [status]);
+  // O total de cada status já está contado na visão materializada contagem_por_status
+  // (banco/08-contagem-por-status.sql). Aqui só lê.
+  const [contagem] = await consultar('SELECT total FROM contagem_por_status WHERE status = $1', [status]);
   // Só as 4 colunas que a resposta usa: com elas no índice, o banco não precisa abrir a tabela.
   const linhas = await consultar(
     'SELECT id, cliente_id, status, criado_em FROM pedidos WHERE status = $1 ORDER BY criado_em DESC, id DESC LIMIT $2 OFFSET $3',
