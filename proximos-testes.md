@@ -2,9 +2,9 @@
 
 Ideias que pesquisei e não testei. Nenhuma tem resultado medido. O que foi aplicado e medido está no [experimentos.md](experimentos.md).
 
-1. **Busca de produtos com `pg_trgm`.**
-   Hipótese: a busca fica mais rápida, porque para de ler todos os produtos a cada chamada. O ganho geral deve ser pequeno.
-   Fonte: [PostgreSQL 16, pg_trgm](https://www.postgresql.org/docs/16/pgtrgm.html)
+1. **Índice comum em `produtos(nome)` para a busca.**
+   Hipótese: a busca fica mais rápida em parte dos termos. No [diagnóstico 19](diagnostico-bd/19-explain-busca-indice-comum.txt), o banco usou o índice em 9 dos 12 termos da carga, mas só 4 ficaram claramente mais rápidos; em `teclado` e `webcam` ficou pior. Testei só o `EXPLAIN`, sem aplicar, porque o ganho na carga seria incerto.
+   Fonte: [PostgreSQL 16, Índices](https://www.postgresql.org/docs/16/indexes-intro.html)
 
 2. **Índice na visão materializada da `top-produtos`.**
    Hipótese: a rota para de ordenar todas as linhas da visão a cada chamada. O ganho deve ser pequeno, porque ela já está rápida.
