@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img" aria-label="Consultas da rota de pedidos do cliente antes e depois do JOIN">
+<rect width="760" height="420" fill="#fcfcfb"/>
+<text x="24.0" y="34.0" font-size="18" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Rota /clientes/:id/pedidos: antes e depois da mudança 02</text>
+<text x="24.0" y="56.0" font-size="13" fill="#52514e" text-anchor="start" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Cada seta cheia é uma consulta da API ao banco; a tracejada é a resposta.</text>
+<text x="24.0" y="92.0" font-size="14" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Antes: uma consulta por pedido e por item</text>
+<text x="54.0" y="120.0" font-size="13" fill="#52514e" text-anchor="middle" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>API</text>
+<text x="324.0" y="120.0" font-size="13" fill="#52514e" text-anchor="middle" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Banco</text>
+<line x1="54" y1="128" x2="54" y2="370" stroke="#c3c2b7" stroke-width="1"/>
+<line x1="324" y1="128" x2="324" y2="370" stroke="#c3c2b7" stroke-width="1"/>
+<line x1="54" y1="150" x2="316" y2="150" stroke="#2a78d6" stroke-width="2"/><polygon points="324,150 316,145 316,155" fill="#2a78d6"/>
+<text x="189.0" y="144.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>1. o cliente</text>
+<line x1="324" y1="162" x2="62" y2="162" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="54,162 62,157 62,167" fill="#898781"/>
+<line x1="54" y1="182" x2="316" y2="182" stroke="#2a78d6" stroke-width="2"/><polygon points="324,182 316,177 316,187" fill="#2a78d6"/>
+<text x="189.0" y="176.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>2. os pedidos do cliente</text>
+<line x1="324" y1="194" x2="62" y2="194" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="54,194 62,189 62,199" fill="#898781"/>
+<line x1="54" y1="214" x2="316" y2="214" stroke="#2a78d6" stroke-width="2"/><polygon points="324,214 316,209 316,219" fill="#2a78d6"/>
+<text x="189.0" y="208.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>3. os itens do pedido 1</text>
+<line x1="324" y1="226" x2="62" y2="226" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="54,226 62,221 62,231" fill="#898781"/>
+<line x1="54" y1="246" x2="316" y2="246" stroke="#2a78d6" stroke-width="2"/><polygon points="324,246 316,241 316,251" fill="#2a78d6"/>
+<text x="189.0" y="240.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>4. o produto do item 1</text>
+<line x1="324" y1="258" x2="62" y2="258" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="54,258 62,253 62,263" fill="#898781"/>
+<line x1="54" y1="278" x2="316" y2="278" stroke="#2a78d6" stroke-width="2"/><polygon points="324,278 316,273 316,283" fill="#2a78d6"/>
+<text x="189.0" y="272.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>5. o produto do item 2</text>
+<line x1="324" y1="290" x2="62" y2="290" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="54,290 62,285 62,295" fill="#898781"/>
+<line x1="54" y1="310" x2="316" y2="310" stroke="#2a78d6" stroke-width="2"/><polygon points="324,310 316,305 316,315" fill="#2a78d6"/>
+<text x="189.0" y="304.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>6. os itens do pedido 2</text>
+<line x1="324" y1="322" x2="62" y2="322" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="54,322 62,317 62,327" fill="#898781"/>
+<text x="189.0" y="346.0" font-size="12" fill="#898781" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>… e assim por diante</text>
+<text x="24.0" y="396.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Total: 2 + 1 por pedido + 1 por item</text>
+<text x="400.0" y="92.0" font-size="14" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Depois: JOIN</text>
+<text x="430.0" y="120.0" font-size="13" fill="#52514e" text-anchor="middle" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>API</text>
+<text x="700.0" y="120.0" font-size="13" fill="#52514e" text-anchor="middle" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Banco</text>
+<line x1="430" y1="128" x2="430" y2="370" stroke="#c3c2b7" stroke-width="1"/>
+<line x1="700" y1="128" x2="700" y2="370" stroke="#c3c2b7" stroke-width="1"/>
+<line x1="430" y1="150" x2="692" y2="150" stroke="#2a78d6" stroke-width="2"/><polygon points="700,150 692,145 692,155" fill="#2a78d6"/>
+<text x="565.0" y="144.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>1. o cliente</text>
+<line x1="700" y1="162" x2="438" y2="162" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="430,162 438,157 438,167" fill="#898781"/>
+<line x1="430" y1="182" x2="692" y2="182" stroke="#2a78d6" stroke-width="2"/><polygon points="700,182 692,177 692,187" fill="#2a78d6"/>
+<text x="565.0" y="176.0" font-size="12" fill="#0b0b0b" text-anchor="middle" font-weight="normal" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>2. pedidos + itens + produtos (JOIN)</text>
+<line x1="700" y1="194" x2="438" y2="194" stroke="#898781" stroke-width="2" stroke-dasharray="5 4"/><polygon points="430,194 438,189 438,199" fill="#898781"/>
+<text x="400.0" y="396.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family='system-ui, -apple-system, "Segoe UI", sans-serif'>Total: sempre 2 consultas</text>
+</svg>
